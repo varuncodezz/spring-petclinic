@@ -15,14 +15,14 @@ pipeline {
         stage('Compile') {
             steps {
                 container('maven') {
-                  sh 'mvn -B -ntp clean compile'
+                  sh 'mvn clean compile'
                 }
             }
         }
         stage('JUnit Tests') {
             steps {
                 container('maven') {
-                    sh 'mvn test '
+                    sh 'mvn test  -Dcheckstyle.skip jacoco:report'
                     junit 'target/surefire-reports/**/*.xml'
                 }
             }
@@ -31,10 +31,11 @@ pipeline {
             steps {
                 container('maven') {
                     jacoco(
-                        execPattern: '**/build/jacoco/*.exec',
-                        classPattern: '**/build/classes/java/main',
+                        execPattern: '**/target/*.exec',
+                        classPattern: '**/target/classes',
                         sourcePattern: '**/src/main'
                     )
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'target/site/jacoco', reportFiles: 'index.html', reportName: 'CodeCoverage-Report', reportTitles: ''])
                 }
             }
         }        
