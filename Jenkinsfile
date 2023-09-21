@@ -41,7 +41,6 @@ pipeline {
         stage('Performance Tests') {
             steps {
                 container('jmeter'){
-                    sh "ls && ls src/test/resources"
                     sh "jmeter -n -t ${env.WORKSPACE}/src/test/jmeter/petclinic_test_plan.jmx -l result.jtl -e -o result"
                     perfReport filterRegex: '', sourceDataFiles: '**/*.jtl'
                     publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'result', reportFiles: 'index.html', reportName: 'JMeter-Report', reportTitles: ''])
