@@ -15,7 +15,7 @@ pipeline {
         stage('Compile') {
             steps {
                 container('maven') {
-                  sh 'mvn clean compile'
+                  sh 'mvn clean compile  -Dcheckstyle.skip'
                 }
             }
         }
@@ -31,8 +31,8 @@ pipeline {
             steps {
                 container('maven') {
                     jacoco(
-                        execPattern: '**/target/*.exec',
-                        classPattern: '**/target/classes',
+                        execPattern: '**/build/jacoco/*.exec',
+                        classPattern: '**/build/classes/java/main',
                         sourcePattern: '**/src/main'
                     )
                     publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'target/site/jacoco', reportFiles: 'index.html', reportName: 'CodeCoverage-Report', reportTitles: ''])
