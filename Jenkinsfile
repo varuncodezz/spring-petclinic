@@ -40,13 +40,9 @@ pipeline {
         }        
         stage('Performance Tests') {
             steps {
-                container('docker'){
-                    sh "wget https://raw.githubusercontent.com/brainupgrade-in/jenkins/main/src/test/resources/jmeter-e2e.jmx"
-                    sh "mkdir -p src/test/resources && mv jmeter-e2e.jmx src/test/resources/jmeter-e2e.jmx"
-                }
                 container('jmeter'){
                     sh "ls && ls src/test/resources"
-                    sh "jmeter -n -t ${env.WORKSPACE}/src/test/resources/jmeter-e2e.jmx -l result.jtl -e -o result"
+                    sh "jmeter -n -t ${env.WORKSPACE}/src/test/jmeter/petclinic_test_plan.jmx -l result.jtl -e -o result"
                     perfReport filterRegex: '', sourceDataFiles: '**/*.jtl'
                     publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'result', reportFiles: 'index.html', reportName: 'JMeter-Report', reportTitles: ''])
                 }
