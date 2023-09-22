@@ -110,14 +110,16 @@ pipeline {
         }
 
         stage('Performance Tests') {
-            container('tools'){
-                sh "/bin/bash -c echo -n 'Waiting for petclinic to be up http://petclinic.e2e.svc.cluster.local ...' && until nc -z petclinic.e2e.svc.cluster.local 80; do sleep 1 && echo -n .; done && echo 'http://petclinic.e2e.svc.cluster.local is up now!'"
-            }
+            steps{
+                container('tools'){
+                    sh "/bin/bash -c echo -n 'Waiting for petclinic to be up http://petclinic.e2e.svc.cluster.local ...' && until nc -z petclinic.e2e.svc.cluster.local 80; do sleep 1 && echo -n .; done && echo 'http://petclinic.e2e.svc.cluster.local is up now!'"
+                }
 
-            container('jmeter'){
-                sh "jmeter -n -t ${env.WORKSPACE}/src/test/jmeter/petclinic_test_plan.jmx -l result.jtl -e -o result"
-                perfReport filterRegex: '', sourceDataFiles: '**/*.jtl'
-                publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'result', reportFiles: 'index.html', reportName: 'JMeter-Report', reportTitles: ''])
+                container('jmeter'){
+                    sh "jmeter -n -t ${env.WORKSPACE}/src/test/jmeter/petclinic_test_plan.jmx -l result.jtl -e -o result"
+                    perfReport filterRegex: '', sourceDataFiles: '**/*.jtl'
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'result', reportFiles: 'index.html', reportName: 'JMeter-Report', reportTitles: ''])
+                }
             }
         }        
 
