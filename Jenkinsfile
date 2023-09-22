@@ -102,7 +102,7 @@ pipeline {
                 sh "git config --global user.email 'ci@ci.com'"
 
                 dir("gitops-k8s-apps") {
-                    sh "cd ./petclinic/e2e && kustomize edit set image brainupgrade/petclinic:${env.GIT_COMMIT}"
+                    sh "cd ./petclinic/e2e && kustomize edit set image brainupgrade/spring-petclinic:${env.GIT_COMMIT}"
                     sh "git commit -am 'Publish new version' && git push || echo 'no changes'"
                 }
                 }
@@ -131,7 +131,7 @@ pipeline {
                 input message:'Approve deployment to UAT?'
                 container('argocdtools') {
                 dir("gitops-k8s-apps") {
-                    sh "cd ./petclinic/uat && kustomize edit set image brainupgrade/petclinic:${env.GIT_COMMIT}"
+                    sh "cd ./petclinic/uat && kustomize edit set image brainupgrade/spring-petclinic:${env.GIT_COMMIT}"
                     sh "git commit -am 'Publish new version' && git push || echo 'no changes'"
                 }
                 }
@@ -146,7 +146,7 @@ pipeline {
                 input message:'Approve deployment to PROD?'
                 container('argocdtools') {
                 dir("gitops-k8s-apps") {
-                    sh "cd ./petclinic/prod && kustomize edit set image brainupgrade/petclinic:${env.GIT_COMMIT}"
+                    sh "cd ./petclinic/prod && kustomize edit set image brainupgrade/spring-petclinic:${env.GIT_COMMIT}"
                     sh "git commit -am 'Publish new version' && git push || echo 'no changes'"
                 }
                 }
@@ -160,8 +160,8 @@ pipeline {
                 container('docker') {
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     sh "docker login -u ${USERNAME} -p ${PASSWORD}"
-                    sh "docker tag brainupgrade/petclinic:${env.GIT_COMMIT} brainupgrade/petclinic:latest"
-                    sh "docker push brainupgrade/petclinic:latest"
+                    sh "docker tag brainupgrade/spring-petclinic:${env.GIT_COMMIT} brainupgrade/spring-petclinic:latest"
+                    sh "docker push brainupgrade/spring-petclinic:latest"
                 }
                 }
             }
