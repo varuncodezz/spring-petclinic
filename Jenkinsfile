@@ -68,8 +68,8 @@ pipeline {
             steps{
                 container('docker') {
                     withDockerRegistry(credentialsId: 'docker-hub-credentials', url: 'https://index.docker.io/v1/') {                        
-                        sh "docker build -t brainupgrade/spring-petclinic:${env.BUILD_ID} ."
-                        sh "docker push brainupgrade/spring-petclinic:${env.BUILD_ID} "
+                        sh "docker build -t brainupgrade/spring-petclinic:${env.GIT_COMMIT} ."
+                        sh "docker push brainupgrade/spring-petclinic:${env.GIT_COMMIT} "
                     }
                 }
             }
@@ -81,7 +81,7 @@ pipeline {
                         sh "wget https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl"
                     }
                     container('trivy'){
-                        sh "trivy image --severity HIGH,CRITICAL --format template --template '@html.tpl'   --output image-cve.html brainupgrade/spring-petclinic:${env.BUILD_ID}"
+                        sh "trivy image --severity HIGH,CRITICAL --format template --template '@html.tpl'   --output image-cve.html brainupgrade/spring-petclinic:${env.GIT_COMMIT}"
                         publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: '.', reportFiles: 'image-cve.html', reportName: 'ImageScan-CVE-Trivy-Report', reportTitles: 'Trivy Image Scan'])
                         // sh "trivy image --quiet --vuln-type os,library --exit-code 1 --severity CRITICAL brainupgrade/spring-petclinic:${env.BUILD_ID}"
                     }
