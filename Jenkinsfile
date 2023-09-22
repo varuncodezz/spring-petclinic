@@ -97,7 +97,7 @@ pipeline {
             }
             steps {
                 input message:'Approve deployment to E2E?'
-                container('tools') {
+                container('argocdtools') {
                 sh "git clone https://$GIT_CREDS_USR:$GIT_CREDS_PSW@github.com/brainupgrade-in/gitops-k8s-apps.git"
                 sh "git config --global user.email 'ci@ci.com'"
 
@@ -129,7 +129,7 @@ pipeline {
             }      
             steps {
                 input message:'Approve deployment to UAT?'
-                container('tools') {
+                container('argocdtools') {
                 dir("gitops-k8s-apps") {
                     sh "cd ./petclinic/uat && kustomize edit set image brainupgrade/petclinic:${env.GIT_COMMIT}"
                     sh "git commit -am 'Publish new version' && git push || echo 'no changes'"
@@ -144,7 +144,7 @@ pipeline {
             }      
             steps {
                 input message:'Approve deployment to PROD?'
-                container('tools') {
+                container('argocdtools') {
                 dir("gitops-k8s-apps") {
                     sh "cd ./petclinic/prod && kustomize edit set image brainupgrade/petclinic:${env.GIT_COMMIT}"
                     sh "git commit -am 'Publish new version' && git push || echo 'no changes'"
